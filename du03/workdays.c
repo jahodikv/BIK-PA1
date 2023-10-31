@@ -12,8 +12,85 @@ typedef struct {
 } TResult;
 #endif /* __PROGTEST__ */
 
+
+int publicHoliday(int m, int d) {
+
+    if (m == 1 && d == 1) { return 1; }
+
+    if (m == 5 && d == 1) { return 1; }
+    if (m == 5 && d == 8) { return 1; }
+    if (m == 7 && d == 5) { return 1; }
+    if (m == 7 && d == 6) { return 1; }
+    if (m == 9 && d == 28) { return 1; }
+    if (m == 10 && d == 28) { return 1; }
+    if (m == 11 && d == 17) { return 1; }
+    if (m == 12 && d == 24) { return 1; }
+    if (m == 12 && d == 25) { return 1; }
+    if (m == 12 && d == 26) { return 1; }
+
+
+    return 0;
+
+}
+
+int validateDate(int y, int m, int d) {
+    if (y < 2000) {
+
+        return 0;
+    }
+    if (m < 1 || m > 12) {
+        return 0;
+    }
+    if (d < 1) {
+        return 0;
+    }
+
+    int days = 31;
+    if (m == 2) {
+        days = 28;
+        if (y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)) {
+            days = 29;
+        }
+    } else if (m == 4 || m == 6 || m == 9 || m == 11) {
+        days = 30;
+    }
+
+    if (d > days) {
+        return 0;
+    }
+    return 1;
+
+}
+
+
 bool isWorkDay(int y, int m, int d) {
-    /* todo */
+    int day;
+    int year = y;
+    //Tomohiko Sakamoto method
+    static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    y -= m < 3;
+    day = (y + y / 4 - y / 100 + y / 400 + t[m - 1] + d) % 7;
+
+
+    //printf("%d\n",day);
+
+    if (day == 0 || day == 6) {
+
+        printf("weekend");
+        return false;
+    }
+    if (publicHoliday(m, d) == 1) {
+        printf("hollidaz");
+        return false;
+
+    }
+    if (validateDate(year, m, d) == 0) {
+
+        return false;
+    }
+
+    return true;
+
 }
 
 TResult countDays(int y1, int m1, int d1,
@@ -37,11 +114,14 @@ int leapYear(int a) {
 
 }
 
+
 #ifndef __PROGTEST__
 
 int main(int argc, char *argv[]) {
     TResult r;
-
+    // int y,m,d;
+    //scanf("%d %d %d", &y, &m,&d);
+    // isWorkDay(y,m,d);
 
     assert (isWorkDay(2023, 10, 10));
 
