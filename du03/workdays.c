@@ -33,7 +33,7 @@ int countLeapYears(int y) {
 
     int leapYears = 0;
     for (int i = 2000; i < y; ++i) {
-        if (leapYear(i) == 1) { leapYears++; };
+        if (leapYear(i) == 1) { leapYears++; }
     }
 
     //printf("%d", leapYears);
@@ -104,16 +104,7 @@ int validateDate(int y, int m, int d) {
     return 1;
 
 }
-int checkDates(int y1, int m1, int d1,
-               int y2, int m2, int d2){
 
-
-
-
-
-
-
-}
 bool isWorkDay(int y, int m, int d) {
     int day;
     int year = y;
@@ -144,31 +135,62 @@ bool isWorkDay(int y, int m, int d) {
 
 }
 
+int countWorkDays(int y1, int m1, int d1,
+                  int y2, int m2, int d2) {
+    int monthDays[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int workDays = 0;
+    while ((y1 != y2) || (m1 != m2) || (d1 != d2)) {
+        monthDays[1] = 28;
+        if (leapYear(y1) == 1) {
+            monthDays[1] = 29;
+        }
+
+        if (d1 > monthDays[m1 - 1]) {
+            d1 = 1;
+            m1++;
+        }
+        if (m1 > 12) {
+
+            m1 = 1;
+            y1++;
+
+        }
+        if (isWorkDay(y1, m1, d1) == true) { workDays++; }
+        d1++;
+    }
+    if (isWorkDay(y1, m1, d1) == true) { workDays++; }
+    return workDays;
+}
+
+
 TResult countDays(int y1, int m1, int d1,
                   int y2, int m2, int d2) {
     TResult r;
 
-    if ((validateDate(y1,m1,d1)==false)||(validateDate(y2,m2,d2)==false)){
-        r.m_TotalDays=-1;
+    if ((validateDate(y1, m1, d1) == false) || (validateDate(y2, m2, d2) == false)) {
+        r.m_TotalDays = -1;
+        r.m_WorkDays = -1;
         return r;
 
     }
     int sum1;
     int sum2;
     int sum;
-    int q = daysInMonths(y1, m1);
-    int z = countLeapYears(y1);
-    sum1 = (y1 - 2000) * 365 + d1 + q + z;
+
+    sum1 = (y1 - 2000) * 365 + d1 + daysInMonths(y1, m1) + countLeapYears(y1);
     sum2 = (y2 - 2000) * 365 + d2 + daysInMonths(y2, m2) + countLeapYears(y2);
     if (sum2 - sum1 == 0) {
         r.m_TotalDays = 1;
     }
     if (sum2 - sum1 < 0) {
         r.m_TotalDays = -1;
+        r.m_WorkDays = -1;
         return r;
     }
-    r.m_TotalDays = sum2 - sum1+1;
+    r.m_TotalDays = sum2 - sum1 + 1;
     //printf("%d", r);
+    r.m_WorkDays = countWorkDays(y1,m1,d1,y2,m2,d2);
+
     return r;
 
 }
@@ -208,57 +230,57 @@ int main(int argc, char *argv[]) {
     r = countDays(2023, 11, 1,
                   2023, 11, 30);
     assert (r.m_TotalDays == 30);
-    //assert (r.m_WorkDays == 21);
+    assert (r.m_WorkDays == 21);
 
     r = countDays(2023, 11, 1,
                   2023, 11, 17);
     assert (r.m_TotalDays == 17);
-    //assert (r.m_WorkDays == 12);
+    assert (r.m_WorkDays == 12);
 
     r = countDays(2023, 11, 1,
                   2023, 11, 1);
     assert (r.m_TotalDays == 1);
-    //assert (r.m_WorkDays == 1);
+    assert (r.m_WorkDays == 1);
 
     r = countDays(2023, 11, 17,
                   2023, 11, 17);
     assert (r.m_TotalDays == 1);
-    //assert (r.m_WorkDays == 0);
+    assert (r.m_WorkDays == 0);
 
     r = countDays(2023, 1, 1,
                   2023, 12, 31);
     assert (r.m_TotalDays == 365);
-    //assert (r.m_WorkDays == 252);
+    assert (r.m_WorkDays == 252);
 
     r = countDays(2024, 1, 1,
                   2024, 12, 31);
     assert (r.m_TotalDays == 366);
-    //assert (r.m_WorkDays == 254);
+    assert (r.m_WorkDays == 254);
 
     r = countDays(2000, 1, 1,
                   2023, 12, 31);
     assert (r.m_TotalDays == 8766);
-    //assert (r.m_WorkDays == 6072);
+    assert (r.m_WorkDays == 6072);
 
     r = countDays(2001, 2, 3,
                   2023, 7, 18);
     assert (r.m_TotalDays == 8201);
-    //assert (r.m_WorkDays == 5682);
+    assert (r.m_WorkDays == 5682);
 
     r = countDays(2021, 3, 31,
                   2023, 11, 12);
     assert (r.m_TotalDays == 957);
-    //assert (r.m_WorkDays == 666);
+    assert (r.m_WorkDays == 666);
 
     r = countDays(2001, 1, 1,
                   2000, 1, 1);
     assert (r.m_TotalDays == -1);
-    //assert (r.m_WorkDays == -1);
+    assert (r.m_WorkDays == -1);
 
     r = countDays(2001, 1, 1,
                   2023, 2, 29);
     assert (r.m_TotalDays == -1);
-    //assert (r.m_WorkDays == -1);
+    assert (r.m_WorkDays == -1);
 
     return EXIT_SUCCESS;
 }
