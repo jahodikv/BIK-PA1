@@ -41,6 +41,14 @@ int countLeapYears(int y) {
 
 }
 
+int daysInOneMonth(int y, int m) {
+
+    int monthDays[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (leapYear(y) == 1) { monthDays[1] = 29; }
+    return monthDays[m - 1];
+
+}
+
 int daysInMonths(int y, int m) {
 
     int d = 0;
@@ -59,7 +67,6 @@ int daysInMonths(int y, int m) {
 int publicHoliday(int m, int d) {
 
     if (m == 1 && d == 1) { return 1; }
-
     if (m == 5 && d == 1) { return 1; }
     if (m == 5 && d == 8) { return 1; }
     if (m == 7 && d == 5) { return 1; }
@@ -87,33 +94,31 @@ int validateDate(int y, int m, int d) {
     if (d < 1) {
         return 0;
     }
-
-    int days = 31;
-    if (m == 2) {
-        days = 28;
-        if (leapYear(y) == 1) {
-            days = 29;
-        }
-    } else if (m == 4 || m == 6 || m == 9 || m == 11) {
-        days = 30;
-    }
-
-    if (d > days) {
+    if (d > daysInOneMonth(y, m)) {
         return 0;
     }
     return 1;
 
 }
 
-bool isWorkDay(int y, int m, int d) {
+int dayOfTheWeek(int y, int m, int d) {
+
+
     int day;
-    int year = y;
-    //Tomohiko Sakamoto method
-    static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+
+    //Tomohiko Sakamoto's Algorithm https://www.geeksforgeeks.org/tomohiko-sakamotos-algorithm-finding-day-week/
+    int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
     y -= m < 3;
     day = (y + y / 4 - y / 100 + y / 400 + t[m - 1] + d) % 7;
 
+    return day;
 
+}
+
+bool isWorkDay(int y, int m, int d) {
+
+
+    int day = dayOfTheWeek(y, m, d);
     //printf("%d\n",day);
 
     if (day == 0 || day == 6) {
@@ -122,11 +127,11 @@ bool isWorkDay(int y, int m, int d) {
         return false;
     }
     if (publicHoliday(m, d) == 1) {
-        //printf("hollidaz");
+        //printf("hollidays");
         return false;
 
     }
-    if (validateDate(year, m, d) == 0) {
+    if (validateDate(y, m, d) == 0) {
 
         return false;
     }
@@ -137,6 +142,7 @@ bool isWorkDay(int y, int m, int d) {
 
 int countWorkDays(int y1, int m1, int d1,
                   int y2, int m2, int d2) {
+    int count = 0;
     int monthDays[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     int workDays = 0;
     while ((y1 != y2) || (m1 != m2) || (d1 != d2)) {
@@ -155,8 +161,16 @@ int countWorkDays(int y1, int m1, int d1,
             y1++;
 
         }
+
         if (isWorkDay(y1, m1, d1) == true) { workDays++; }
+        if ((y1 == y2) && (m1 == m2) && (d1 == d2)) { return workDays; }
         d1++;
+        count++;
+        if (count > 1000000) {
+            return -1;
+        }
+
+
     }
     if (isWorkDay(y1, m1, d1) == true) { workDays++; }
     return workDays;
@@ -175,12 +189,15 @@ TResult countDays(int y1, int m1, int d1,
     }
     int sum1;
     int sum2;
-    int sum;
+
 
     sum1 = (y1 - 2000) * 365 + d1 + daysInMonths(y1, m1) + countLeapYears(y1);
     sum2 = (y2 - 2000) * 365 + d2 + daysInMonths(y2, m2) + countLeapYears(y2);
     if (sum2 - sum1 == 0) {
         r.m_TotalDays = 1;
+        if (isWorkDay(y1, m2, d1) == true) { r.m_WorkDays = 1; }
+        else { r.m_WorkDays = 0; }
+        return r;
     }
     if (sum2 - sum1 < 0) {
         r.m_TotalDays = -1;
@@ -189,7 +206,7 @@ TResult countDays(int y1, int m1, int d1,
     }
     r.m_TotalDays = sum2 - sum1 + 1;
     //printf("%d", r);
-    r.m_WorkDays = countWorkDays(y1,m1,d1,y2,m2,d2);
+    r.m_WorkDays = countWorkDays(y1, m1, d1, y2, m2, d2);
 
     return r;
 
@@ -200,15 +217,11 @@ TResult countDays(int y1, int m1, int d1,
 
 int main(int argc, char *argv[]) {
     TResult r;
-    int y, m, d;
-    int y1, m1, d1;
-    int z;
-    //  scanf("%d %d %d", &y, &m,&d);
-    //   scanf("%d %d %d", &y1, &m1,&d1);
-    // isWorkDay(y,m,d);
-    //   countDays(y,m,d,y1,m1,d1);
-    //z = countLeapYears(2023);
-    //printf("%d", z);
+//int y,m,d,y1,m1,d1,z;
+    //scanf("%d %d %d", &y, &m,&d);
+    //scanf("%d %d %d", &y1, &m1,&d1);
+    //isWorkDay(y,m,d);
+    // countDays(y,m,d,y1,m1,d1);
     assert (isWorkDay(2023, 10, 10));
 
     assert (!isWorkDay(2023, 11, 11));
@@ -227,6 +240,16 @@ int main(int argc, char *argv[]) {
 
     assert (!isWorkDay(1996, 1, 2));
 
+    r = countDays(2001, 11, 1,
+                  2005, 6, 1);
+    assert (r.m_TotalDays == 1309);
+    assert (r.m_WorkDays == 909);
+
+
+    r = countDays(2000, 1, 1,
+                  2000, 5, 1);
+    assert (r.m_TotalDays == 122);
+    assert (r.m_WorkDays == 85);
     r = countDays(2023, 11, 1,
                   2023, 11, 30);
     assert (r.m_TotalDays == 30);
