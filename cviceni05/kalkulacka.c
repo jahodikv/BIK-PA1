@@ -42,8 +42,12 @@ double count(char c, double a, double b) {
     }
     if (c == '/') {
 
+        if(a<1 && b<1){
+            a*=100;
+            b*=100;
+        }
 
-        result = a / b;
+        result = (int)a / b;
 
 
     }
