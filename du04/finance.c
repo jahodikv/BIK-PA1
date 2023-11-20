@@ -7,44 +7,30 @@ int getMaxLenght(int balance[], int size) {
 
     int currentLength = 0;
     int maxLength = 0;
-
-
-    for (int i = 0; i < size; ++i) {
+    int bestIntervals[MAX_INPUT][2];
+    int count = 0;
+    int finalCount = 0;
+    int best;
+    for (int i = 0; i <= size; ++i) {
 
         for (int j = size - 1; j > i; --j) {
 
             if (balance[j] >= balance[i]) {
 
                 currentLength = j - i + 1;
-                if (currentLength > maxLength) {
+                if (currentLength >maxLength) {
+                    //printf("%d\n", i);
+                    count=0;
+                    bestIntervals[count][0] = i;
+                    bestIntervals[count][1] = j;
                     maxLength = currentLength;
-                }
-                break;
-            }
-
-        }
-
-    }
-    return maxLength;
-
-}
-void printInterval(int balance[],int size, int maxLength){
-int count=0;
-int currentLength=0;
-
-    for (int i = 0; i < size; ++i) {
-
-        for (int j = size - 1; j > i; --j) {
-
-            if (balance[j] >= balance[i]) {
-
-                currentLength = j - i + 1;
-                if (currentLength == maxLength) {
-
-                    printf("%d: %d - %d\n", maxLength, i, j);
                     count++;
-
-
+                } else if(currentLength ==maxLength) {
+                    //printf("%d\n", i);
+                    bestIntervals[count][0] = i;
+                    bestIntervals[count][1] = j;
+                    maxLength = currentLength;
+                    count++;
                 }
                 break;
             }
@@ -55,14 +41,31 @@ int currentLength=0;
     if (count == 0) {
 
         printf("Nelze najit.\n");
-    } else {
+        return 1;
+    }
+    for (int i = 0; i < count + 1; ++i) {
+        best = bestIntervals[i][1] - bestIntervals[i][0] + 1;
 
-        printf("Moznosti: %d\n", count);
+        //printf("%d",bestIntervals[1][1]);
+        if (best == maxLength) {
+
+
+            printf("%d: %d - %d\n", maxLength, bestIntervals[i][0], bestIntervals[i][1]);
+
+           finalCount++;
+       }
+
+
     }
 
 
+    printf("Moznosti: %d\n", finalCount);
 
-};
+
+    return 1;
+
+}
+
 
 int main(void) {
     int balance[MAX_INPUT];
@@ -73,7 +76,7 @@ int main(void) {
 
 
         x = scanf("%d", &balance[size]);
-
+//if (balance[size]==-1){
         if (x == EOF) {
             if (size < 2) {
                 printf("Nespravny vstup.\n");
@@ -88,8 +91,8 @@ int main(void) {
 
     }
 
-    printInterval(balance,size, getMaxLenght(balance,size));
-        return 0;
+    getMaxLenght(balance, size);
+    return 0;
 
 
 }
