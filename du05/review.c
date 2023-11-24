@@ -106,6 +106,82 @@ int validateStruct(struct Review *reviewArr, int size) {
 
 }
 
+void printInterval(struct Review *reviewArr, int inputNum, int size) {
+
+    int closestNum = 0, count = 0, sameDay = 0;
+int i;
+int bestCount=0;
+    int bestIntervals[size][3];
+
+    for (int g = 0; g < size; ++g) {
+
+        if (g > 0) {
+            if (reviewArr[g].year == reviewArr[g - 1].year && reviewArr[g].month == reviewArr[g - 1].month &&
+                reviewArr[g].day == reviewArr[g - 1].day) {
+
+                continue;
+            }
+        }
+        for ( i = g; i < size; ++i) {
+
+            if (i > 0) {
+            if (reviewArr[i].year == reviewArr[i - 1].year && reviewArr[i].month == reviewArr[i - 1].month &&
+                reviewArr[i].day == reviewArr[i - 1].day) {
+                sameDay += reviewArr[i].points;
+                continue;
+            }}
+
+            if(sameDay==0){
+
+                count += reviewArr[i].points;
+            }
+            else{
+                count += sameDay;
+                sameDay = 0;
+                if (abs(count - inputNum) <= abs(closestNum - inputNum)) {
+
+
+                    closestNum = count;
+                    bestIntervals[bestCount][0]=g;
+                    bestIntervals[bestCount][1]=i-1;
+                    bestIntervals[bestCount][2]=closestNum;
+
+                    bestCount++;
+
+                }
+                count += reviewArr[i].points;
+            }
+
+
+            if (abs(count - inputNum) <= abs(closestNum - inputNum)) {
+
+
+                closestNum = count;
+                bestIntervals[bestCount][0]=g;
+                bestIntervals[bestCount][1]=i;
+                bestIntervals[bestCount][2]=closestNum;
+
+                bestCount++;
+
+            }
+
+
+        }
+        i = g;
+
+    }
+    for (int j = bestCount; j > -1; --j) {
+if(closestNum==bestIntervals[j][2]){
+
+    bestCount=j;
+    break;
+}
+    }
+    printf("%d-%d-%d - %d-%d-%d: %d\n",reviewArr[bestIntervals[bestCount][0]].year,reviewArr[bestIntervals[bestCount][0]].month,reviewArr[bestIntervals[bestCount][0]].day,reviewArr[bestIntervals[bestCount][1]].year,reviewArr[bestIntervals[bestCount][1]].month,reviewArr[bestIntervals[bestCount][1]].day,bestIntervals[bestCount][2]);
+    //printf("%d\n",bestIntervals[bestCount][2]);
+
+}
+
 struct Review scanReview() {
     struct Review review;
     scanf("%d-%d-%d %d %4095s", &review.year, &review.month, &review.day, &review.points, review.description);
@@ -126,6 +202,7 @@ int main(void) {
     if (reviewArr == NULL) {
         exit(EXIT_FAILURE);
     }
+    printf("Recenze:\n");
     for (size = 0; size < memCapacity; size++) {
 
         if (size == memCapacity - 1) {
@@ -135,11 +212,12 @@ int main(void) {
 
 
         scanf("%c", &c);
-       // printf("%c\n", c);
+        // printf("%c\n", c);
         if (c == '+') {
             reviewArr[size] = scanReview();
 
-            if(validateDate(reviewArr[size].year, reviewArr[size].month, reviewArr[size].day)==0 || validateStruct(reviewArr, size)==0){
+            if (validateDate(reviewArr[size].year, reviewArr[size].month, reviewArr[size].day) == 0 ||
+                validateStruct(reviewArr, size) == 0) {
                 free(reviewArr);
                 return 0;
             }
@@ -154,7 +232,7 @@ int main(void) {
                 free(reviewArr);
                 return 0;
             }
-            //printInterval();
+            printInterval(reviewArr, inputNum, size);
             //printTotal();
             //printReviews();
         } else if (c == '#') {
@@ -165,7 +243,7 @@ int main(void) {
                 free(reviewArr);
                 return 0;
             }
-            //printInterval();
+            printInterval(reviewArr, inputNum, size);
             //printTotal();
 
         } else {
