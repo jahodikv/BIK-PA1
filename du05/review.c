@@ -1,15 +1,14 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
+
 struct Review {
     int day;
     int month;
     int year;
-    int daysInDate;
     int points;
     char description[4096];
 };
-
 
 
 int leapYear(int a) {
@@ -27,6 +26,7 @@ int leapYear(int a) {
     }
 
 }
+
 int countLeapYears(int y) {
 
     int leapYears = 0;
@@ -46,6 +46,7 @@ int daysInOneMonth(int y, int m) {
     return monthDays[m - 1];
 
 }
+
 int daysInMonths(int y, int m) {
 
     int d = 0;
@@ -60,6 +61,7 @@ int daysInMonths(int y, int m) {
     return d;
 
 }
+
 int validateDate(int y, int m, int d) {
     if (y < 2000) {
 
@@ -78,6 +80,31 @@ int validateDate(int y, int m, int d) {
 
 }
 
+int validateStruct(struct Review *reviewArr, int size) {
+
+    if (size > 0) {
+        int sum2 = (reviewArr[size].year - 1800) * 365 + reviewArr[size].day +
+                   daysInMonths(reviewArr[size].year, reviewArr[size].month) + countLeapYears(reviewArr[size].year);
+        int sum1 = (reviewArr[size - 1].year - 1800) * 365 + reviewArr[size - 1].day +
+                   daysInMonths(reviewArr[size - 1].year, reviewArr[size - 1].month) +
+                   countLeapYears(reviewArr[size - 1].year);
+        if (sum2 < sum1) {
+
+
+            printf("Nespravny vstup.\n");
+            return 0;
+        }
+
+
+    }
+    if (reviewArr[size].points <= 0) {
+        printf("Nespravny vstup.\n");
+        return 0;
+    }
+    return 1;
+
+
+}
 
 struct Review scanReview() {
     struct Review review;
@@ -87,40 +114,74 @@ struct Review scanReview() {
 }
 
 
+int main(void) {
 
-int main(void){
 
-
-    int reviewCount = 5;
-    int count;
-    char c;
-    struct Review* reviewArr = (struct Review*)malloc(reviewCount * sizeof(struct Review));
+    int memCapacity = 5;
+    int size, inputNum;
+    char c, newline;
+    struct Review *reviewArr = (struct Review *) malloc(memCapacity * sizeof(struct Review));
 
 
     if (reviewArr == NULL) {
         exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < reviewCount; i++) {
-        scanf("%c",&c);
-        if(c=='+'){
-        reviewArr[i] = scanReview();
-        validateStruct(reviewArr[i]);}
-        else if(c=='?'){
+    for (size = 0; size < memCapacity; size++) {
 
-            scanf("%d",&count);
-            printInterval();
-            printTotal();
-            printReviews();
+        if (size == memCapacity - 1) {
+            memCapacity = 2 * size;
+            reviewArr = (struct Review *) realloc(reviewArr, memCapacity * sizeof(struct Review));
         }
-        else if(c=='#'){
 
-            scanf("%d",&count);
-            printInterval();
-            printTotal();
 
+        scanf("%c", &c);
+       // printf("%c\n", c);
+        if (c == '+') {
+            reviewArr[size] = scanReview();
+
+            if(validateDate(reviewArr[size].year, reviewArr[size].month, reviewArr[size].day)==0 || validateStruct(reviewArr, size)==0){
+                free(reviewArr);
+                return 0;
+            }
+
+
+        } else if (c == '?') {
+
+
+            scanf("%d", &inputNum);
+            if (size == 0 || inputNum <= 0) {
+                printf("Nespravny vstup.\n");
+                free(reviewArr);
+                return 0;
+            }
+            //printInterval();
+            //printTotal();
+            //printReviews();
+        } else if (c == '#') {
+
+            scanf("%d", &inputNum);
+            if (size == 0 || inputNum <= 0) {
+                printf("Nespravny vstup.\n");
+                free(reviewArr);
+                return 0;
+            }
+            //printInterval();
+            //printTotal();
+
+        } else {
+
+            printf("Nespravny vstup.\n");
+            free(reviewArr);
+            return 0;
         }
-        else{
+        if (scanf("%c", &newline) == EOF) {
 
+            free(reviewArr);
+            return 0;
+        } else if (newline == '\n') {
+
+            continue;
+        } else {
             printf("Nespravny vstup.\n");
             free(reviewArr);
             return 0;
