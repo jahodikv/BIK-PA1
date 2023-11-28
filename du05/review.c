@@ -92,14 +92,14 @@ int validateStruct(struct Review *reviewArr, int size) {
         if (sum2 < sum1) {
 
 
-            printf("Nespravny vstup.\n");
+
             return 0;
         }
 
 
     }
     if (reviewArr[size].points <= 0) {
-        printf("Nespravny vstup.\n");
+
         return 0;
     }
     return 1;
@@ -107,7 +107,7 @@ int validateStruct(struct Review *reviewArr, int size) {
 
 }
 
-void printInterval(struct Review *reviewArr, int targetSum, int size) {
+void printInterval(struct Review *reviewArr, int targetSum, int size, int printReview) {
 
     int closestNum = 0, count = 0, sameDay = 0;
     int bestSum = 0;
@@ -152,10 +152,10 @@ void printInterval(struct Review *reviewArr, int targetSum, int size) {
                 i--;
             }
 
-            int current_diff = abs(targetSum - currentSum);
+            int currentDiff = abs(targetSum - currentSum);
 
-            if (current_diff < bestDiff || (current_diff == bestDiff && i > bestEnd)) {
-                bestDiff = current_diff;
+            if (currentDiff < bestDiff || (currentDiff == bestDiff && i > bestEnd)) {
+                bestDiff = currentDiff;
                 count = currentSum;
                 bestStart = g;
                 bestEnd = i;
@@ -164,13 +164,38 @@ void printInterval(struct Review *reviewArr, int targetSum, int size) {
 
         }
 
-
     }
+    printf("%d-", reviewArr[bestStart].year);
+    if (reviewArr[bestStart].month < 10) { printf("0%d-", reviewArr[bestStart].month); }
+    else {
+        printf("%d-", reviewArr[bestStart].month);
+    }
+    if (reviewArr[bestStart].day < 10) { printf("0%d - ", reviewArr[bestStart].day); }
+    else {
+        printf("%d - ", reviewArr[bestStart].day);
+    }
+    printf("%d-", reviewArr[bestEnd].year);
+
+    if (reviewArr[bestEnd].month < 10) { printf("0%d-", reviewArr[bestEnd].month); }
+    else {
+        printf("%d-", reviewArr[bestEnd].month);
+    }
+    if (reviewArr[bestEnd].day < 10) { printf("0%d: ", reviewArr[bestEnd].day); }
+    else {
+        printf("%d: ", reviewArr[bestEnd].day);
+    }
+    printf("%d\n", count);
+    //printf("%d-%d-%d - %d-%d-%d: %d\n", reviewArr[bestStart].year, reviewArr[bestStart].month,
+      //     reviewArr[bestStart].day, reviewArr[bestEnd].year, reviewArr[bestEnd].month,
+        //   reviewArr[bestEnd].day, count);
+    if (printReview == 1)
+        for (int j = bestStart; j <= bestEnd; ++j) {
+
+            printf("  %d: %s\n", reviewArr[j].points, reviewArr[j].description);
 
 
-    printf("%d-%d-%d - %d-%d-%d: %d\n", reviewArr[bestStart].year, reviewArr[bestStart].month,
-           reviewArr[bestStart].day, reviewArr[bestEnd].year, reviewArr[bestEnd].month,
-           reviewArr[bestEnd].day, count);
+        }
+
     //printf("%d\n",bestIntervals[bestCount][2]);
 
 }
@@ -211,6 +236,8 @@ int main(void) {
 
             if (validateDate(reviewArr[size].year, reviewArr[size].month, reviewArr[size].day) == 0 ||
                 validateStruct(reviewArr, size) == 0) {
+
+                printf("Nespravny vstup.\n");
                 free(reviewArr);
                 return 0;
             }
@@ -226,9 +253,8 @@ int main(void) {
                 return 0;
             }
 
-            printInterval(reviewArr, inputNum, size);
-            //printTotal();
-            //printReviews();
+            printInterval(reviewArr, inputNum, size, 1);
+
         } else if (c == '#') {
 
             scanf("%d", &inputNum);
@@ -238,8 +264,8 @@ int main(void) {
                 return 0;
             }
 
-            printInterval(reviewArr, inputNum, size);
-            //printTotal();
+            printInterval(reviewArr, inputNum, size, 0);
+
 
         } else {
 
