@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
+#include <limits.h>
 
 struct Review {
     int day;
@@ -106,78 +107,70 @@ int validateStruct(struct Review *reviewArr, int size) {
 
 }
 
-void printInterval(struct Review *reviewArr, int inputNum, int size) {
+void printInterval(struct Review *reviewArr, int targetSum, int size) {
 
     int closestNum = 0, count = 0, sameDay = 0;
-int i;
-int bestCount=0;
-    int bestIntervals[size][3];
-
+    int bestSum = 0;
+    int bestDiff = INT_MAX;
+    int bestStart = 0, bestEnd = 0;
+    int start;
+    int i, x = 0;
+    int nextSkip = INT_MAX;
     for (int g = 0; g < size; ++g) {
 
-        if (g > 0) {
-            if (reviewArr[g].year == reviewArr[g - 1].year && reviewArr[g].month == reviewArr[g - 1].month &&
-                reviewArr[g].day == reviewArr[g - 1].day) {
+        int currentSum = 0;
+        start = g;
+        if (g == nextSkip) {
+            while (g < size && reviewArr[g].day == reviewArr[start].day &&
+                   reviewArr[g].month == reviewArr[start].month &&
+                   reviewArr[g].year == reviewArr[start].year) {
 
-                continue;
+                g++;
             }
+
         }
-        for ( i = g; i < size; ++i) {
-
-            if (i > 0) {
-            if (reviewArr[i].year == reviewArr[i - 1].year && reviewArr[i].month == reviewArr[i - 1].month &&
-                reviewArr[i].day == reviewArr[i - 1].day) {
-                sameDay += reviewArr[i].points;
-                continue;
-            }}
-
-            if(sameDay==0){
-
-                count += reviewArr[i].points;
-            }
-            else{
-                count += sameDay;
-                sameDay = 0;
-                if (abs(count - inputNum) <= abs(closestNum - inputNum)) {
+        nextSkip = INT_MAX;
+        for (i = g; i < size; ++i) {
 
 
-                    closestNum = count;
-                    bestIntervals[bestCount][0]=g;
-                    bestIntervals[bestCount][1]=i-1;
-                    bestIntervals[bestCount][2]=closestNum;
+            start = i;
+            x = 0;
 
-                    bestCount++;
+            while (i < size && reviewArr[i].day == reviewArr[start].day &&
+                   reviewArr[i].month == reviewArr[start].month &&
+                   reviewArr[i].year == reviewArr[start].year) {
+                currentSum += reviewArr[i].points;
 
+                i++;
+                x++;
+                if (x == 2 && nextSkip == INT_MAX) {
+
+                    nextSkip = i - 1;
                 }
-                count += reviewArr[i].points;
+            }
+            if (x >= 1) {
+                i--;
             }
 
+            int current_diff = abs(targetSum - currentSum);
 
-            if (abs(count - inputNum) <= abs(closestNum - inputNum)) {
-
-
-                closestNum = count;
-                bestIntervals[bestCount][0]=g;
-                bestIntervals[bestCount][1]=i;
-                bestIntervals[bestCount][2]=closestNum;
-
-                bestCount++;
+            if (current_diff < bestDiff || (current_diff == bestDiff && i > bestEnd)) {
+                bestDiff = current_diff;
+                count = currentSum;
+                bestStart = g;
+                bestEnd = i;
 
             }
-
 
         }
-        i = g;
+
 
     }
-    for (int j = bestCount; j > -1; --j) {
-if(closestNum==bestIntervals[j][2]){
 
-    bestCount=j;
-    break;
-}
-    }
-    printf("%d-%d-%d - %d-%d-%d: %d\n",reviewArr[bestIntervals[bestCount][0]].year,reviewArr[bestIntervals[bestCount][0]].month,reviewArr[bestIntervals[bestCount][0]].day,reviewArr[bestIntervals[bestCount][1]].year,reviewArr[bestIntervals[bestCount][1]].month,reviewArr[bestIntervals[bestCount][1]].day,bestIntervals[bestCount][2]);
+
+    printf("%d-%d-%d - %d-%d-%d: %d\n", reviewArr[bestStart].year, reviewArr[bestStart].month,
+           reviewArr[bestStart].day, reviewArr[bestEnd].year, reviewArr[bestEnd].month,
+           reviewArr[bestEnd].day, count);
     //printf("%d\n",bestIntervals[bestCount][2]);
 
 }
@@ -194,7 +187,7 @@ int main(void) {
 
 
     int memCapacity = 5;
-    int size, inputNum;
+    int size = 0, inputNum;
     char c, newline;
     struct Review *reviewArr = (struct Review *) malloc(memCapacity * sizeof(struct Review));
 
@@ -203,7 +196,7 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
     printf("Recenze:\n");
-    for (size = 0; size < memCapacity; size++) {
+    while (size < memCapacity) {
 
         if (size == memCapacity - 1) {
             memCapacity = 2 * size;
@@ -221,7 +214,7 @@ int main(void) {
                 free(reviewArr);
                 return 0;
             }
-
+            size++;
 
         } else if (c == '?') {
 
@@ -232,6 +225,7 @@ int main(void) {
                 free(reviewArr);
                 return 0;
             }
+
             printInterval(reviewArr, inputNum, size);
             //printTotal();
             //printReviews();
@@ -243,6 +237,7 @@ int main(void) {
                 free(reviewArr);
                 return 0;
             }
+
             printInterval(reviewArr, inputNum, size);
             //printTotal();
 
