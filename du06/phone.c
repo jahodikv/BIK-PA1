@@ -26,6 +26,18 @@ int isNumber(char num[21]) {
 }
 
 
+int isName(char name[256]) {
+
+    for (int i = 0; name[i] != '\0'; i++) {
+        if ((name[i] >= 'A' && name[i] <= 'Z') || (name[i] >= 'a' && name[i] <= 'z') || name[i] == ' ') {
+            continue;
+        }
+        return 1;
+
+    }
+    return 0;
+}
+
 int main(void) {
 
 
@@ -51,8 +63,11 @@ int main(void) {
                 }
                 int exists = 0;
                 int isPhoneNum;
+                int isValidName;
+                isValidName = isName(name);
                 isPhoneNum = isNumber(phoneNumber);
-                if (isPhoneNum == 1 || name[0] == '\0' || name[0] == ' ' || name[strlen(name) - 1] == ' ') {
+
+                if (isValidName==1 || isPhoneNum == 1 || name[0] == '\0' || name[0] == ' ' || name[strlen(name) - 1] == ' ') {
                     printf("Nespravny vstup3.\n");
                     return 0;
                 }
