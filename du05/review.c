@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <limits.h>
 
@@ -8,7 +7,7 @@ struct Review {
     int month;
     int year;
     int points;
-    char description[4096];
+    char description[4097];
 };
 
 
@@ -92,7 +91,6 @@ int validateStruct(struct Review *reviewArr, int size) {
         if (sum2 < sum1) {
 
 
-
             return 0;
         }
 
@@ -109,8 +107,7 @@ int validateStruct(struct Review *reviewArr, int size) {
 
 void printInterval(struct Review *reviewArr, int targetSum, int size, int printReview) {
 
-    int closestNum = 0, count = 0, sameDay = 0;
-    int bestSum = 0;
+    int count = 0;
     int bestDiff = INT_MAX;
     int bestStart = 0, bestEnd = 0;
     int start;
@@ -186,8 +183,8 @@ void printInterval(struct Review *reviewArr, int targetSum, int size, int printR
     }
     printf("%d\n", count);
     //printf("%d-%d-%d - %d-%d-%d: %d\n", reviewArr[bestStart].year, reviewArr[bestStart].month,
-      //     reviewArr[bestStart].day, reviewArr[bestEnd].year, reviewArr[bestEnd].month,
-        //   reviewArr[bestEnd].day, count);
+    //     reviewArr[bestStart].day, reviewArr[bestEnd].year, reviewArr[bestEnd].month,
+    //   reviewArr[bestEnd].day, count);
     if (printReview == 1)
         for (int j = bestStart; j <= bestEnd; ++j) {
 
@@ -196,13 +193,13 @@ void printInterval(struct Review *reviewArr, int targetSum, int size, int printR
 
         }
 
-    //printf("%d\n",bestIntervals[bestCount][2]);
+
 
 }
 
 struct Review scanReview() {
     struct Review review;
-    scanf("%d-%d-%d %d %4095s", &review.year, &review.month, &review.day, &review.points, review.description);
+    scanf("%d-%d-%d %d %4096s", &review.year, &review.month, &review.day, &review.points, review.description);
 
     return review;
 }
@@ -212,7 +209,7 @@ int main(void) {
 
 
     int memCapacity = 5;
-    int size = 0, inputNum;
+    int size = 0, inputNum, res;
     char c, newline;
     struct Review *reviewArr = (struct Review *) malloc(memCapacity * sizeof(struct Review));
 
@@ -229,8 +226,20 @@ int main(void) {
         }
 
 
-        scanf("%c", &c);
+        res = scanf("%c", &c);
         // printf("%c\n", c);
+
+
+        if (res == EOF) {
+
+            free(reviewArr);
+            return 0;
+        } else if (res != 1) {
+
+            printf("Nespravny vstup.\n");
+            free(reviewArr);
+            return 0;
+        }
         if (c == '+') {
             reviewArr[size] = scanReview();
 
@@ -246,7 +255,17 @@ int main(void) {
         } else if (c == '?') {
 
 
-            scanf("%d", &inputNum);
+            res=scanf("%d", &inputNum);
+            if (res == EOF) {
+
+                free(reviewArr);
+                return 0;
+            } else if (res != 1) {
+
+                printf("Nespravny vstup.\n");
+                free(reviewArr);
+                return 0;
+            }
             if (size == 0 || inputNum <= 0) {
                 printf("Nespravny vstup.\n");
                 free(reviewArr);
@@ -257,7 +276,17 @@ int main(void) {
 
         } else if (c == '#') {
 
-            scanf("%d", &inputNum);
+            res=scanf("%d", &inputNum);
+            if (res == EOF) {
+
+                free(reviewArr);
+                return 0;
+            } else if (res != 1) {
+
+                printf("Nespravny vstup.\n");
+                free(reviewArr);
+                return 0;
+            }
             if (size == 0 || inputNum <= 0) {
                 printf("Nespravny vstup.\n");
                 free(reviewArr);
@@ -273,6 +302,7 @@ int main(void) {
             free(reviewArr);
             return 0;
         }
+
         if (scanf("%c", &newline) == EOF) {
 
             free(reviewArr);
