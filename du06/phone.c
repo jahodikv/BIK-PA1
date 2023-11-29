@@ -6,10 +6,27 @@
 
 struct Phonebook {
     char phoneNumber[21];
-    char name[256];
+    char *name;
 };
 
 void find(struct Phonebook *book, int bookLength, char *query) {
+    int findAlready = 0;
+
+    for (int i = 0; i < bookLength; ++i) {
+
+
+        if (strstr(book[i].phoneNumber, query) != NULL || strstr(book[i].name, query) != NULL) {
+
+            printf("%s %s\n", book[i].phoneNumber, book[i].name);
+            findAlready++;
+        }
+
+
+    }
+
+    if (findAlready > 10) {
+        printf("Celkem: %d\n", findAlready);
+    }
 
 
 }
@@ -43,32 +60,75 @@ int main(void) {
 
     int bookCapacity = 3;
     int bookLength = 0;
+    int nameLength = 0;
+    int nameCapacity = 3;
 
 
     struct Phonebook *book = (struct Phonebook *) malloc(bookCapacity * sizeof(struct Phonebook));
 
 
-    char action, phoneNumber[21], name[256], space1, space2, query[223];
-
+    char action, phoneNumber[21], space1, space2, query[223];
+    char *name = (char *) malloc(nameCapacity * sizeof(char));
     while (scanf("%c", &action) != EOF) {
 
         if (action == '+') {
-            if (scanf("%c%20s%c%255[^\n]", &space1, phoneNumber, &space2, name) != 4) {
-                printf("Nespravny vstup1.\n");
+            if (scanf("%c%20s%c", &space1, phoneNumber, &space2) != 3) {
+                printf("Nespravny vstup.\n");
                 return 0;
             } else {
+                nameLength = 0;
+                while (1) {
+                    if (nameLength == nameCapacity) {
+                        nameCapacity *= 2;
+                        name = (char *) realloc(name, nameCapacity * sizeof(char));
+
+                    }
+                    int res = scanf("%c", &name[nameLength]);
+                    if (res == EOF) {
+
+                        break;
+
+                    } else if (res != 1) {
+
+                        printf("Nespravny vstup.\n");
+                        return 0;
+
+                    }
+                    if ((name[nameLength] >= 'A' && name[nameLength] <= 'Z') ||
+                        (name[nameLength] >= 'a' && name[nameLength] <= 'z') || name[nameLength] == ' ') {
+                        nameLength++;
+                        continue;
+                    } else if (name[nameLength] == '\n') {
+
+
+                        name[nameLength] == '\0';
+                        ungetc('\n', stdin);
+                        break;
+
+                    } else {
+
+                        printf("Nespravny vstup.\n");
+                        return 0;
+
+                    }
+
+
+                }
+
+
                 if (space1 != ' ' || space2 != ' ') {
-                    printf("Nespravny vstup2.\n");
+                    printf("Nespravny vstup.\n");
                     return 0;
                 }
                 int exists = 0;
                 int isPhoneNum;
-                int isValidName;
-                isValidName = isName(name);
+                //int isValidName;
+                //isValidName = isName(name);
                 isPhoneNum = isNumber(phoneNumber);
 
-                if (isValidName==1 || isPhoneNum == 1 || name[0] == '\0' || name[0] == ' ' || name[strlen(name) - 1] == ' ') {
-                    printf("Nespravny vstup3.\n");
+                if (isPhoneNum == 1 || name[0] == '\0' || name[0] == ' ' ||
+                    name[strlen(name) - 1] == ' ') {
+                    printf("Nespravny vstup.\n");
                     return 0;
                 }
                 for (int i = 0; i < bookLength; i++) {
@@ -88,6 +148,7 @@ int main(void) {
                     }
 
                     strcpy(book[bookLength].phoneNumber, phoneNumber);
+                    book[bookLength].name = (char *) malloc(strlen(name) + 1);
                     strcpy(book[bookLength].name, name);
                     bookLength++;
                     printf("OK\n");
@@ -96,11 +157,11 @@ int main(void) {
             }
         } else if (action == '?') {
             if (scanf("%c%[^\n]", &space1, query) != 2) {
-                printf("Nespravny vstup4.\n");
+                printf("Nespravny vstup.\n");
                 return 0;
             } else {
                 if (space1 != ' ') {
-                    printf("Nespravny vstup5.\n");
+                    printf("Nespravny vstup.\n");
                     return 0;
                 }
 
