@@ -29,10 +29,8 @@ TCRIMINAL        * createRecord ( const char      * name,
     return l;
 
 
-
-
-
 }
+
 void               addContact   ( TCRIMINAL       * dst,
                                   TCRIMINAL       * contact )
 {
@@ -50,47 +48,88 @@ void               addContact   ( TCRIMINAL       * dst,
 
     dst->m_Contacts[dst->m_Cnt++] = contact;
 }
+
+
 TCRIMINAL        * cloneList    ( TCRIMINAL       * src ) {
     if (src == NULL) {
         return NULL;
-    } else {
+    }
 
-        TCRIMINAL *newNode = (TCRIMINAL *)malloc(sizeof(TCRIMINAL));
+    //prvni krok pridame za kazde policko nove policko
+//zkopirujeme src do cur
+    TCRIMINAL * cur =  src;
+    TCRIMINAL * newhead = NULL;
 
-        newNode->m_Contacts = (TCRIMINAL **)malloc(newNode->m_Capacity * sizeof(TCRIMINAL *));
-        for (size_t i = 0; i < newNode->m_Cnt; ++i) {
-            newNode->m_Contacts[i] = NULL; // Initialize each contact pointer to NULL
+        while(cur != NULL)
+        {
+            //ulozime si next do docasne promenne
+            TCRIMINAL * tmp = cur->m_Next;
+            //zkopirujeme vsechny hodnoty krome kontaktu do nCur
+            TCRIMINAL * nCur = (TCRIMINAL*) malloc(sizeof (TCRIMINAL));
+            nCur->m_Cnt=cur->m_Cnt;
+            nCur->m_Capacity=cur->m_Capacity;
+            nCur->m_Name = (char *)malloc(strlen(cur->m_Name) + 1);
+            strcpy(nCur->m_Name, cur->m_Name);
 
-            TCRIMINAL *currentContact = src->m_Contacts[i];
-            TCRIMINAL *previousClonedContact = NULL;
-
-            while (currentContact != NULL) {
-                TCRIMINAL *clonedContact = (TCRIMINAL *)malloc(sizeof(TCRIMINAL));
-
-                clonedContact->m_Name = (char *)malloc(strlen(currentContact->m_Name) + 1);
-                strcpy(clonedContact->m_Name, currentContact->m_Name);
-
-                // Link the cloned contact to the cloned list
-                if (previousClonedContact == NULL) {
-                    newNode->m_Contacts[i] = clonedContact;
-                } else {
-                    previousClonedContact->m_Next = clonedContact;
-                }
-                previousClonedContact = clonedContact;
-
-                currentContact = currentContact->m_Next;
+            //pokud je to prvi iterace a newhed smeruje na null tak newhed namirime na prvni policko listu
+            if (newhead == NULL) {
+                newhead = nCur;
             }
+            //posuneme se v listu dale
+            cur->m_Next=nCur;
+            nCur->m_Next=tmp;
+            cur=tmp;
+
+
+        }
+        cur=src;
+
+    TCRIMINAL * nCur=newhead;
+
+    while(cur!=NULL && nCur->m_Next!=NULL){
+//pokud nema zadne kontanky nastavime null
+        if(cur->m_Contacts==NULL){
+            nCur->m_Contacts=NULL;
+        }else{
+            //alokujeme pole kontaktu
+            nCur->m_Contacts = (TCRIMINAL **) malloc(cur->m_Capacity * sizeof(TCRIMINAL *));
+            for (int i = 0; i < cur->m_Cnt; ++i) {
+                //zapiseme nove kontakty m_Next zarucuje ze ukazuje na nove vytvorene kopie policek
+                nCur->m_Contacts[i] = cur->m_Contacts[i]->m_Next;
+            }
+
+        }
+        cur=cur->m_Next->m_Next;
+        nCur=nCur->m_Next->m_Next;
+    }
+    if(cur->m_Contacts==NULL){
+        nCur->m_Contacts=NULL;
+    }else{
+
+        nCur->m_Contacts = (TCRIMINAL **) malloc(cur->m_Capacity * sizeof(TCRIMINAL *));
+        for (int i = 0; i < cur->m_Cnt; ++i) {
+
+            nCur->m_Contacts[i] = cur->m_Contacts[i]->m_Next;
         }
 
-                newNode->m_Name = (char *)malloc(strlen(src->m_Name) + 1);
-        strcpy(newNode->m_Name, src->m_Name);
-        newNode->m_Cnt = src->m_Cnt;
-        newNode->m_Capacity = src->m_Capacity;
-
-        newNode->m_Next = cloneList(src->m_Next);
-
-        return newNode;
     }
+
+
+    //odpojeni puvodniho listu od noveho
+    cur=src;
+    nCur=newhead;
+    while(cur!=NULL && nCur->m_Next!=NULL){
+        cur->m_Next=nCur->m_Next;
+        cur=nCur->m_Next;
+
+        nCur->m_Next=cur->m_Next;
+        nCur=cur->m_Next;
+    }
+    cur->m_Next=NULL;
+
+        return newhead;
+
+
 }
 
 
