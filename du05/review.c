@@ -10,7 +10,10 @@ struct Review {
     char description[4097];
 };
 
-
+/**
+ * Determine if year is a leap year.
+ * @return 1 if year is a leap year, otherwise 0
+ */
 int leapYear(int a) {
 
     if (a % 4000 == 0) {
@@ -26,44 +29,58 @@ int leapYear(int a) {
     }
 
 }
+/**
+ * Determine how many leap years are in the interval <1800,int a> where int a is parameter
+ * @return the number of leap years in that period
+ */
 
 int countLeapYears(int y) {
 
     int leapYears = 0;
-    for (int i = 2000; i < y; ++i) {
+// Input years are entered in a reasonable range (1800 - 3000), that's why we started iterating from 1800.
+    for (int i = 1800; i < y; ++i) {
         if (leapYear(i) == 1) { leapYears++; }
     }
 
-    //printf("%d", leapYears);
     return leapYears;
 
 }
-
-int daysInOneMonth(int y, int m) {
+/**
+ * Determine how many days are in a given month
+ * @return the number of days in a given month
+ */
+int daysInOneMonth(int year, int month) {
 
     int monthDays[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (leapYear(y) == 1) { monthDays[1] = 29; }
-    return monthDays[m - 1];
+    if (leapYear(year) == 1) { monthDays[1] = 29; }
+    return monthDays[month - 1];
 
 }
-
+/**
+ * Determine the number of days in the previous months within the specified year and a month
+ * @return the number of days in the previous months
+ */
 int daysInMonths(int y, int m) {
 
-    int d = 0;
+    int days = 0;
 
     int monthDays[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     if (leapYear(y) == 1) { monthDays[1] = 29; }
 
     for (int i = 0; i < m - 1; ++i) {
-        d += monthDays[i];
+        days += monthDays[i];
     }
 
-    return d;
+    return days;
 
 }
-
+/**
+ * Determine if a given date is valid.
+ * @return 1 if a date is valid, otherwise 0
+ */
 int validateDate(int y, int m, int d) {
-    if (y < 2000) {
+    // Input years are entered in a reasonable range (1800 - 3000), that's why years before 1800 are not valid
+    if (y < 1800) {
 
         return 0;
     }
@@ -79,10 +96,14 @@ int validateDate(int y, int m, int d) {
     return 1;
 
 }
-
+/**
+ * Determine if a given struct Review is valid.
+ * @return 1 if a date is valid, otherwise 0
+ */
 int validateStruct(struct Review *reviewArr, int size) {
 
     if (size > 0) {
+        //check if the date entered in the review is smaller than the date in the previous review,
         int sum2 = (reviewArr[size].year - 1800) * 365 + reviewArr[size].day +
                    daysInMonths(reviewArr[size].year, reviewArr[size].month) + countLeapYears(reviewArr[size].year);
         int sum1 = (reviewArr[size - 1].year - 1800) * 365 + reviewArr[size - 1].day +
@@ -90,12 +111,11 @@ int validateStruct(struct Review *reviewArr, int size) {
                    countLeapYears(reviewArr[size - 1].year);
         if (sum2 < sum1) {
 
-
             return 0;
         }
 
-
     }
+    //check if the points are at least 1.
     if (reviewArr[size].points <= 0) {
 
         return 0;
@@ -182,9 +202,7 @@ void printInterval(struct Review *reviewArr, int targetSum, int size, int printR
         printf("%d: ", reviewArr[bestEnd].day);
     }
     printf("%d\n", count);
-    //printf("%d-%d-%d - %d-%d-%d: %d\n", reviewArr[bestStart].year, reviewArr[bestStart].month,
-    //     reviewArr[bestStart].day, reviewArr[bestEnd].year, reviewArr[bestEnd].month,
-    //   reviewArr[bestEnd].day, count);
+
     if (printReview == 1)
         for (int j = bestStart; j <= bestEnd; ++j) {
 
