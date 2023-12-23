@@ -37,7 +37,12 @@ void               addContact   ( TCRIMINAL       * dst,
 
     if (dst->m_Cnt == dst->m_Capacity) {
 
-        size_t newCapacity = (dst->m_Capacity == 0) ? 1 : dst->m_Capacity * 2;
+        size_t newCapacity;
+        if (dst->m_Capacity == 0) {
+            newCapacity = 1;
+        } else {
+            newCapacity = dst->m_Capacity * 2;
+        }
 
         TCRIMINAL **newContacts = (TCRIMINAL **)realloc(dst->m_Contacts, newCapacity * sizeof(TCRIMINAL *));
 
@@ -55,27 +60,27 @@ TCRIMINAL        * cloneList    ( TCRIMINAL       * src ) {
         return NULL;
     }
 
-    //prvni krok pridame za kazde policko nove policko
-//zkopirujeme src do cur
+    //duplicate each node
+
     TCRIMINAL * cur =  src;
     TCRIMINAL * newhead = NULL;
 
         while(cur != NULL)
         {
-            //ulozime si next do docasne promenne
+            //save next in temporary variable
             TCRIMINAL * tmp = cur->m_Next;
-            //zkopirujeme vsechny hodnoty krome kontaktu do nCur
+            //copy every value apart from contacts into nCur
             TCRIMINAL * nCur = (TCRIMINAL*) malloc(sizeof (TCRIMINAL));
             nCur->m_Cnt=cur->m_Cnt;
             nCur->m_Capacity=cur->m_Capacity;
             nCur->m_Name = (char *)malloc(strlen(cur->m_Name) + 1);
             strcpy(nCur->m_Name, cur->m_Name);
 
-            //pokud je to prvi iterace a newhed smeruje na null tak newhed namirime na prvni policko listu
+
             if (newhead == NULL) {
                 newhead = nCur;
             }
-            //posuneme se v listu dale
+            //itarate
             cur->m_Next=nCur;
             nCur->m_Next=tmp;
             cur=tmp;
@@ -87,14 +92,14 @@ TCRIMINAL        * cloneList    ( TCRIMINAL       * src ) {
     TCRIMINAL * nCur=newhead;
 
     while(cur!=NULL && nCur->m_Next!=NULL){
-//pokud nema zadne kontanky nastavime null
+//the last node
         if(cur->m_Contacts==NULL){
             nCur->m_Contacts=NULL;
         }else{
-            //alokujeme pole kontaktu
+
             nCur->m_Contacts = (TCRIMINAL **) malloc(cur->m_Capacity * sizeof(TCRIMINAL *));
-            for (int i = 0; i < cur->m_Cnt; ++i) {
-                //zapiseme nove kontakty m_Next zarucuje ze ukazuje na nove vytvorene kopie policek
+            for (size_t i = 0; i < cur->m_Cnt; ++i) {
+
                 nCur->m_Contacts[i] = cur->m_Contacts[i]->m_Next;
             }
 
@@ -107,7 +112,7 @@ TCRIMINAL        * cloneList    ( TCRIMINAL       * src ) {
     }else{
 
         nCur->m_Contacts = (TCRIMINAL **) malloc(cur->m_Capacity * sizeof(TCRIMINAL *));
-        for (int i = 0; i < cur->m_Cnt; ++i) {
+        for (size_t i = 0; i < cur->m_Cnt; ++i) {
 
             nCur->m_Contacts[i] = cur->m_Contacts[i]->m_Next;
         }
@@ -115,7 +120,7 @@ TCRIMINAL        * cloneList    ( TCRIMINAL       * src ) {
     }
 
 
-    //odpojeni puvodniho listu od noveho
+    //disconect new list from the old one
     cur=src;
     nCur=newhead;
     while(cur!=NULL && nCur->m_Next!=NULL){
@@ -183,7 +188,7 @@ int main ( int argc, char * argv [] )
            && ! strcmp ( a -> m_Next -> m_Next -> m_Next -> m_Name, "Peter" )
            && a -> m_Next -> m_Next -> m_Next -> m_Cnt == 1
            && a -> m_Next -> m_Next -> m_Next -> m_Contacts[0] == a -> m_Next );
-  assert ( a -> m_Next -> m_Next -> m_Next -> m_Next == NULL);
+  assert ( a -> m_Next -> m_Next -> m_Next -> m_Next == nullptr);
   b = cloneList ( a );
   strcpy ( tmp, "Moe" );
   a = createRecord ( tmp, a );
@@ -216,7 +221,7 @@ int main ( int argc, char * argv [] )
            && ! strcmp ( a -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Name, "Peter" )
            && a -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Cnt == 1
            && a -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Contacts[0] == a -> m_Next -> m_Next -> m_Next -> m_Next );
-  assert ( a -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next == NULL );
+  assert ( a -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next -> m_Next == nullptr );
   assert ( b
            && ! strcmp ( b -> m_Name, "Maria" )
            && b -> m_Cnt == 1
@@ -233,7 +238,7 @@ int main ( int argc, char * argv [] )
            && b -> m_Next -> m_Next -> m_Next -> m_Cnt == 2
            && b -> m_Next -> m_Next -> m_Next -> m_Contacts[0] == b -> m_Next
            && b -> m_Next -> m_Next -> m_Next -> m_Contacts[1] == b -> m_Next -> m_Next );
-  assert ( b -> m_Next -> m_Next -> m_Next -> m_Next == NULL );
+  assert ( b -> m_Next -> m_Next -> m_Next -> m_Next == nullptr );
   freeList ( a );
   addContact ( b -> m_Next, b -> m_Next );
   a = cloneList ( b );
@@ -254,7 +259,7 @@ int main ( int argc, char * argv [] )
            && a -> m_Next -> m_Next -> m_Next -> m_Cnt == 2
            && a -> m_Next -> m_Next -> m_Next -> m_Contacts[0] == a -> m_Next
            && a -> m_Next -> m_Next -> m_Next -> m_Contacts[1] == a -> m_Next -> m_Next );
-  assert ( a -> m_Next -> m_Next -> m_Next -> m_Next == NULL );
+  assert ( a -> m_Next -> m_Next -> m_Next -> m_Next == nullptr );
   assert ( b
            && ! strcmp ( b -> m_Name, "Maria" )
            && b -> m_Cnt == 1
@@ -272,7 +277,7 @@ int main ( int argc, char * argv [] )
            && b -> m_Next -> m_Next -> m_Next -> m_Cnt == 2
            && b -> m_Next -> m_Next -> m_Next -> m_Contacts[0] == b -> m_Next
            && b -> m_Next -> m_Next -> m_Next -> m_Contacts[1] == b -> m_Next -> m_Next );
-  assert ( b -> m_Next -> m_Next -> m_Next -> m_Next == NULL );
+  assert ( b -> m_Next -> m_Next -> m_Next -> m_Next == nullptr );
   freeList ( b );
   freeList ( a );
   return EXIT_SUCCESS;
