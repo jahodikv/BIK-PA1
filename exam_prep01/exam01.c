@@ -14,7 +14,6 @@ struct Domino {
 
 };
 
-
 void editDomino(struct Domino *dominoArr, int sizeArr) {
 
     for (int i = 0; i <= sizeArr; ++i) {
@@ -64,94 +63,73 @@ int compare_ints(const void *a, const void *b) {
 void findDuplicates(struct Domino *dominoArr, int sizeArr) {
 
 
-   // int duplicatesCap = 5;
-   // int duplicatesSize = 0;
-   // struct Same *duplicates = (struct Same *) malloc(duplicatesCap * sizeof(struct Same));
+    // int duplicatesCap = 5;
+    // int duplicatesSize = 0;
+    // struct Same *duplicates = (struct Same *) malloc(duplicatesCap * sizeof(struct Same));
     int uniques = 0;
     int capacityChar = sizeArr + 1;
     int sizeChar = 0;
     int pass = 0;
 
 
-    for (int i = 0; i < sizeArr-1; ++i) {
-
-     
-        
-
-            if ((dominoArr[i].aa == dominoArr[i+1].aa && dominoArr[i].ab == dominoArr[i+1].ab &&
-                 dominoArr[i].ba == dominoArr[i+1].ba && dominoArr[i].bb == dominoArr[i+1].bb)||
-                 (dominoArr[i].aa == dominoArr[i+1].ba && dominoArr[i].ab == dominoArr[i+1].bb &&
-                 dominoArr[i].ba == dominoArr[i+1].aa && dominoArr[i].bb == dominoArr[i+1].ab))
-                 
-                  {
-
-if(i==0 ){
+    for (int i = 0; i < sizeArr - 1; ++i) {
 
 
-    uniques++;
-}
+        if ((dominoArr[i].aa == dominoArr[i + 1].aa && dominoArr[i].ab == dominoArr[i + 1].ab &&
+             dominoArr[i].ba == dominoArr[i + 1].ba && dominoArr[i].bb == dominoArr[i + 1].bb) ||
+            (dominoArr[i].aa == dominoArr[i + 1].ba && dominoArr[i].ab == dominoArr[i + 1].bb &&
+             dominoArr[i].ba == dominoArr[i + 1].aa && dominoArr[i].bb == dominoArr[i + 1].ab)) {
 
-                 }
-                 else{
-
-uniques++;
-
-                 }
+            if (i == 0) {
 
 
-        
+                uniques++;
+            }
+
+        } else {
+
+            uniques++;
+
+        }
 
 
     }
 
     printf("Unikatni: %d\nDuplikaty:\n", uniques);
-    
-    for (int i = 0; i < sizeArr-1; ++i) {
 
-     
-        
-
-            if ((dominoArr[i].aa == dominoArr[i+1].aa && dominoArr[i].ab == dominoArr[i+1].ab &&
-                 dominoArr[i].ba == dominoArr[i+1].ba && dominoArr[i].bb == dominoArr[i+1].bb)||
-                 (dominoArr[i].aa == dominoArr[i+1].ba && dominoArr[i].ab == dominoArr[i+1].bb &&
-                 dominoArr[i].ba == dominoArr[i+1].aa && dominoArr[i].bb == dominoArr[i+1].ab))
-                 
-                  {
-
-if(i==0 || !((dominoArr[i].aa == dominoArr[i-1].aa && dominoArr[i].ab == dominoArr[i-1].ab &&
-                 dominoArr[i].ba == dominoArr[i-1].ba && dominoArr[i].bb == dominoArr[i-1].bb)||
-                 (dominoArr[i].aa == dominoArr[i-1].ba && dominoArr[i].ab == dominoArr[i-1].bb &&
-                 dominoArr[i].ba == dominoArr[i-1].aa && dominoArr[i].bb == dominoArr[i-1].ab)))
-                 {
-
-printf("%c",dominoArr[i].identifier);
-   
-}
-printf(" = %c", dominoArr[i+1].identifier);
-
-                 }
-                 else{
-if ((dominoArr[i].aa == dominoArr[i-1].aa && dominoArr[i].ab == dominoArr[i-1].ab &&
-                 dominoArr[i].ba == dominoArr[i-1].ba && dominoArr[i].bb == dominoArr[i-1].bb)||
-                 (dominoArr[i].aa == dominoArr[i-1].ba && dominoArr[i].ab == dominoArr[i-1].bb &&
-                 dominoArr[i].ba == dominoArr[i-1].aa && dominoArr[i].bb == dominoArr[i-1].ab))
-                 
-                  {
-
-printf("\n");
-
-                 }
+    for (int i = 0; i < sizeArr - 1; ++i) {
 
 
-        
+        if ((dominoArr[i].aa == dominoArr[i + 1].aa && dominoArr[i].ab == dominoArr[i + 1].ab &&
+             dominoArr[i].ba == dominoArr[i + 1].ba && dominoArr[i].bb == dominoArr[i + 1].bb) ||
+            (dominoArr[i].aa == dominoArr[i + 1].ba && dominoArr[i].ab == dominoArr[i + 1].bb &&
+             dominoArr[i].ba == dominoArr[i + 1].aa && dominoArr[i].bb == dominoArr[i + 1].ab)) {
+
+            if (i == 0 || !((dominoArr[i].aa == dominoArr[i - 1].aa && dominoArr[i].ab == dominoArr[i - 1].ab &&
+                             dominoArr[i].ba == dominoArr[i - 1].ba && dominoArr[i].bb == dominoArr[i - 1].bb) ||
+                            (dominoArr[i].aa == dominoArr[i - 1].ba && dominoArr[i].ab == dominoArr[i - 1].bb &&
+                             dominoArr[i].ba == dominoArr[i - 1].aa && dominoArr[i].bb == dominoArr[i - 1].ab))) {
+
+                printf("%c", dominoArr[i].identifier);
+
+            }
+            printf(" = %c", dominoArr[i + 1].identifier);
+
+        } else {
+            if ((dominoArr[i].aa == dominoArr[i - 1].aa && dominoArr[i].ab == dominoArr[i - 1].ab &&
+                 dominoArr[i].ba == dominoArr[i - 1].ba && dominoArr[i].bb == dominoArr[i - 1].bb) ||
+                (dominoArr[i].aa == dominoArr[i - 1].ba && dominoArr[i].ab == dominoArr[i - 1].bb &&
+                 dominoArr[i].ba == dominoArr[i - 1].aa && dominoArr[i].bb == dominoArr[i - 1].ab)) {
+
+                printf("\n");
+
+            }
+
+
+        }
 
 
     }
-
-
-
-    
-}
 }
 
 int main(void) {
@@ -176,8 +154,8 @@ int main(void) {
 
         res = scanf("%c [%d, %d, %d, %d]%c", &dominoArr[sizeArr].identifier, &dominoArr[sizeArr].aa,
                     &dominoArr[sizeArr].ab, &dominoArr[sizeArr].ba, &dominoArr[sizeArr].bb, &newline);
-                    sizeArr++;
-        if ( feof(stdin)) {
+        sizeArr++;
+        if (feof(stdin)) {
 
             editDomino(dominoArr, sizeArr);
             qsort(dominoArr, sizeArr, sizeof(struct Domino), compare_ints);
@@ -196,13 +174,12 @@ int main(void) {
         }
 
 
-        
     }
 
-  //  for (int i = 0; i <= sizeArr; ++i) {
+    //  for (int i = 0; i <= sizeArr; ++i) {
     //    printf("%c [%d, %d, %d, %d]\n", dominoArr[i].identifier, dominoArr[i].aa, dominoArr[i].ab, dominoArr[i].ba,
-      //         dominoArr[i].bb);
-   // }
+    //         dominoArr[i].bb);
+    // }
     free(dominoArr);
     return 0;
 }
